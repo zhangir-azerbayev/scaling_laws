@@ -548,3 +548,5 @@ def main():
     with open('hf_runs.pkl', 'wb') as fle:
         pickle.dump(runs, fle)
 
+if __name__=="__main__":
+    main()
