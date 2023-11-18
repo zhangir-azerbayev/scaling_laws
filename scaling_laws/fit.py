@@ -62,9 +62,12 @@ def scaling_law(params: Params, N: float, D: float):
     return float(np.exp(e)) + float(np.exp(a))/N**alpha + float(np.exp(b))/D**beta
 
 def fit_scaling_law(
-        runs: List[Dict[str, float]]
+        runs: Dict[str, List[float]]
         grid_search: bool = False
-    ):
+    ): 
+    """
+    `runs` must contain keys `'N', 'D', 'L'` (model parameters, tokens, loss). 
+    """
     loss_grad = grad(loss_fn, argnum=0)
 
     best_loss = float('inf')

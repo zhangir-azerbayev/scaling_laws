@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 AxisType = Literal['log', 'log2', 'log10' 'linear']
 
 def scaling_scatter_3d(
-    runs: List[Dict[str, float]],
+    runs: Dict[str, List[float]],
     x_key: str, 
     y_key: str, 
     z_key: str = None,
@@ -111,7 +111,7 @@ def scaling_scatter_3d(
 
 
 def scaling_scatter_2d(
-    runs: List[Dict[str, float]],
+    runs: Dict[str, List[float]],
     x_key: str, 
     x_type: AxisType = 'log10',
     y_key: str, 
