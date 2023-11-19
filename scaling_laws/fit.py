@@ -1,7 +1,9 @@
-from dataclasses import dataclass, astupleimport os
+from dataclasses import dataclass, astuple
+import os
 from typing import List, Dict
 import operator
 import itertools
+from functools import reduce
 
 from tqdm import tqdm
 
@@ -48,8 +50,8 @@ def huber(residuals, delta=1e-3):
     return quadratic + linear
 
 
-def loss_fn(params: Params, N: float, D: float, L: float):
-    a, b, e, alpha, beta = astuple(params)
+def loss_fn(params, N: float, D: float, L: float):
+    a, b, e, alpha, beta = params
     arg1 = a - alpha * np.log(N)
     arg2 = b - beta * np.log(D)
     arg3 = e + np.zeros(arg2.shape)
@@ -62,8 +64,8 @@ def scaling_law(params: Params, N: float, D: float):
     return float(np.exp(e)) + float(np.exp(a))/N**alpha + float(np.exp(b))/D**beta
 
 def fit_scaling_law(
-        runs: Dict[str, List[float]]
-        grid_search: bool = False
+        runs: Dict[str, List[float]],
+        grid_search: bool = False,
     ): 
     """
     `runs` must contain keys `'N', 'D', 'L'` (model parameters, tokens, loss). 
@@ -90,9 +92,9 @@ def fit_scaling_law(
     for x0 in tqdm(itertools.product(*[v for k,v in init_grid.items()]), total=num_inits):
         x0 = np.array(x0)
         result = minimize(
-            parametric_loss, 
+            loss_fn, 
             x0,
-            args=(runs_single_epoch['N'], runs_single_epoch['D'], runs_single_epoch['L']),
+            args=(runs['N'], runs['D'], runs['L']),
             method='L-BFGS-B',
             jac=loss_grad,
             options={'gtol': 1e-12, 'ftol': 1e-12}
@@ -103,4 +105,4 @@ def fit_scaling_law(
             best_init = x0
             best_result = result
 
-    return Params(*best_result)
+    return Params(*best_result.x)

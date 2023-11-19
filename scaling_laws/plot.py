@@ -1,17 +1,33 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Literal, Callable
+
+import numpy as np
+
+import matplotlib as mpl
+
+import plotly.graph_objects as go
+import plotly.io as pio
 
 AxisType = Literal['log', 'log2', 'log10' 'linear']
 
+def scaling_scatter(**kwargs):
+    """
+    If `z_key` in kwargs, calls `scaling_scatter_3d`. Otherwise, calls `scaling_scatter_2d`
+    """
+    if 'z_key' in kwargs:
+        scaling_scatter_3d(**kwargs)
+    else:
+        scaling_scatter_2d(**kwargs)
+
 def scaling_scatter_3d(
+    savepath: str,
     runs: Dict[str, List[float]],
     x_key: str, 
     y_key: str, 
     z_key: str = None,
-    z_type: AxisType = 'log10',
+    z_type: AxisType = 'log',
     color_key: Optional[str] = None,
     color_type: AxisType = 'linear',
     fit_fn: Optional[Callable[[float, float], float]] = None,
-    savepath: str = None,
 ):
     """
     Creates a 3D scaling plot in interactive HTML.
@@ -40,8 +56,8 @@ def scaling_scatter_3d(
     scatter_kwargs = dict(x=x, y=y, z=z)
     axis_kwargs = dict(
         scene=dict(
-            xaxis=dict(type='log10', title=x_key),
-            yaxis=dict(type='log10', title=y_key),
+            xaxis=dict(type='log', title=x_key),
+            yaxis=dict(type='log', title=y_key),
             zaxis=dict(type=z_type, title=z_key),
         )
     )
@@ -52,7 +68,7 @@ def scaling_scatter_3d(
         y_grid = np.logspace(np.log10(min(y)), np.log10(max(y)), 50)
         
         x_grid, y_grid = np.meshgrid(x_grid, y_grid)
-        z_surface = fit_fn(x_grid, y_grid)
+        z_surface = fit_fn(**{x_key: x_grid, y_key: y_grid})
         
         
         surface = go.Surface(
@@ -111,14 +127,14 @@ def scaling_scatter_3d(
 
 
 def scaling_scatter_2d(
+    savepath: str,
     runs: Dict[str, List[float]],
     x_key: str, 
-    x_type: AxisType = 'log10',
     y_key: str, 
+    x_type: AxisType = 'log',
     color_key: Optional[str] = None,
     color_type: AxisType = 'linear',
     fit_fn: Optional[Callable[[float], float]] = None,
-    savepath: str = None,
 ):
     """
     Creates a 2D scaling plot and saves to HTML. If `color_key` is set, will draw isochromatic lines.
@@ -129,8 +145,7 @@ def scaling_scatter_2d(
     y_key str: Coordinate name to plot on y axis. Default log10 scale.
     color_key Optional[str]: Points of the same color will be connected by a line.
     color_type: AxisType
-    fit_fn Optional[Callable[[float], float]]: Surface.
-    surface str
+    fit_fn Optional[Callable[[float], float]]: Scaling law surface.
 
     Returns:
     None
@@ -147,7 +162,7 @@ def scaling_scatter_2d(
     scatter_kwargs = dict(x=x, y=y)
     axis_kwargs = dict(
         xaxis=dict(type=x_type, title=x_key),
-        yaxis=dict(type='log10', title=y_key),
+        yaxis=dict(type='log', title=y_key),
     )
     hovertemplate=f"<b>{x_key}:%{{x:.2e}}</b><br><b>{y_key}:%{{y:.2e}}</b>"
     
