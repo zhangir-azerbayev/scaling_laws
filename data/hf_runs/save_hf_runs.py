@@ -545,7 +545,7 @@ def main():
         'R': np.array([x/y for x,y in zip(tokens, unique_tokens)])
     }
 
-    with open('hf_runs.pkl', 'wb') as fle:
+    with open('runs.pkl', 'wb') as fle:
         pickle.dump(runs, fle)
 
 if __name__=="__main__":

@@ -32,7 +32,7 @@ def main():
             
             runs.append(dict(N=params, D=tokens, L=loss))
 
-    with open('pile-scaling-0.7.pkl', 'wb') as fle:
+    with open('runs.pkl', 'wb') as fle:
         pickle.dump(runs, fle)
 
 
