@@ -19,6 +19,8 @@ def main(args):
     else:
         fit_fn = None
 
+    print(params)
+
     for chart in cfg['charts']:
         chart['savepath'] = os.path.join(args.data_dir, chart.pop('name') + '.html')
         scaling_scatter(runs=runs, **chart, fit_fn=fit_fn)

@@ -1,5 +1,6 @@
 import pickle
 import pandas as pd
+import numpy as np
 
 PARAM_KEY = {
     "70M": 70_426_624,
@@ -31,6 +32,8 @@ def main():
             tokens = BATCH_SIZE * int(tokenized[1].replace('step', ''))
             
             runs.append(dict(N=params, D=tokens, L=loss))
+
+    runs = {key: np.array([x[key] for x in runs]) for key in runs[0]}
 
     with open('runs.pkl', 'wb') as fle:
         pickle.dump(runs, fle)
