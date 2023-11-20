@@ -25,7 +25,7 @@ def main():
 
     runs = []
 
-    for name, loss in df.iteritems():
+    for name, loss in df.items():
         if 'Group' in name:
             tokenized = name.replace('Group: ', '').split('_')
             params = PARAM_KEY[tokenized[0]]
@@ -34,6 +34,8 @@ def main():
             runs.append(dict(N=params, D=tokens, L=loss))
 
     runs = {key: np.array([x[key] for x in runs]) for key in runs[0]}
+
+    print(runs)
 
     with open('runs.pkl', 'wb') as fle:
         pickle.dump(runs, fle)
