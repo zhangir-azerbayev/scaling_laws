@@ -1,0 +1,7 @@
+fit:
+  grid_search: true
+charts:
+  - name: 'scaling'
+    x_key: 'N'
+    y_key: 'D'
+    z_key: 'L'
